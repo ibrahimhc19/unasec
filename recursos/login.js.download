@@ -1,0 +1,228 @@
+/*
+ * SimpleModal login Form
+ * http://simplemodal.com
+ *
+ * Copyright (c) 2013 Eric Martin - http://ericmmartin.com
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ */
+
+jQuery(function ($) {
+	var login = {
+		message: null,
+		init: function () {
+			$('#saman , #login-form input.login, #login-form a.login').click(function (e) {
+				e.preventDefault();
+
+				// load the login form using ajax
+				$.get("login/data/login.php", function(data){
+					// create a modal dialog with the data
+					$(data).modal({
+						closeHTML: "<a href='#' title='Cerrar' class='modal-close'><img src='images/cerrar.png' style='width:2em;height:auto;'></a>",
+						position: ["19%",],
+						overlayId: 'login-overlay',
+						containerId: 'login-container',
+						onOpen: login.open,
+						onShow: login.show,
+						onClose: login.close
+					});
+				});
+			});
+		},
+		open: function (dialog) {
+			// dynamically determine height
+			var h = 280;
+			if ($('#login-subject').length) {
+				h += 26;
+			}
+			if ($('#login-cc').length) {
+				h += 22;
+			}
+
+			var title = $('#login-container .login-title').html();
+			$('#login-container .login-title').html('Cargando...');
+			dialog.overlay.fadeIn(200, function () {
+				dialog.container.fadeIn(200, function () {
+					dialog.data.fadeIn(200, function () {
+						$('#login-container .login-content').animate({
+							height: h
+						}, function () {
+							$('#login-container .login-title').html(title);
+							$('#login-container form').fadeIn(200, function () {
+								$('#login-container #login-name').focus();
+
+								/*$('#login-container .login-cc').click(function () {
+									var cc = $('#login-container #login-cc');
+									cc.is(':checked') ? cc.attr('checked', '') : cc.attr('checked', 'checked');
+								})*/;
+							});
+						});
+					});
+				});
+			});
+		},
+		show: function (dialog) {
+			$('#login-container .login-send').click(function (e) {
+				e.preventDefault();
+				// validate form
+				if (login.validate()) {
+					var msg = $('#login-container .login-message');
+					msg.fadeOut(function () {
+						msg.removeClass('login-error').empty();
+					});
+					$('#login-container .login-title').html('Enviando...');
+					$('#login-container form').fadeOut(200);
+					$('#login-container .login-content').animate({
+						height: '80px'
+					}, function () {
+						$('#login-container .login-loading').fadeIn(200, function () {
+							$.ajax({
+								url: '/login/data/login.php',
+								data: $('#login-container form').serialize() + '&action=send',
+								type: 'post',
+								cache: false,
+								dataType: 'html',
+								success: function (data) {
+									$('#login-container .login-loading').fadeOut(200, function () {
+										$('#login-container .login-title').html('Thank you!');
+										msg.html(data).fadeIn(200);
+									});
+								},
+								error: login.error
+							});
+						});
+					});
+				}
+				else {
+					if ($('#login-container .login-message:visible').length > 0) {
+						var msg = $('#login-container .login-message div');
+						msg.fadeOut(200, function () {
+							msg.empty();
+							login.showError();
+							msg.fadeIn(200);
+						});
+					}
+					else {
+						$('#login-container .login-message').animate({
+							height: '30px'
+						}, login.showError);
+					}
+					
+				}
+			});
+		},
+		close: function (dialog) {
+			$('#login-container .login-message').fadeOut();
+			$('#login-container .login-title').html('Gracias...');
+			$('#login-container form').fadeOut(200);
+			$('#login-container .login-content').animate({
+				height: 40
+			}, function () {
+				dialog.data.fadeOut(200, function () {
+					dialog.container.fadeOut(200, function () {
+						dialog.overlay.fadeOut(200, function () {
+							$.modal.close();
+						});
+					});
+				});
+			});
+		},
+		error: function (xhr) {
+			alert(xhr.statusText);
+		},
+		validate: function () {
+			login.message = '';
+			if (!$('#login-container #usuario').val()) {
+				login.message += 'Usuario es requerido. ';
+			}
+
+			var pass = $('#login-container #pass').val();
+			if (!pass) {
+				login.message += 'Contraseña Requerida. ';
+			};
+			/*
+			else {
+				if (!login.validateEmail(email)) {
+					login.message += 'Email is invalid. ';
+				}
+			}
+
+			var email = $('#login-container #login-email').val();
+			if (!email) {
+				login.message += 'Email is required. ';
+			}
+			else {
+				if (!login.validateEmail(email)) {
+					login.message += 'Email is invalid. ';
+				}
+			} 
+           */
+			if (!$('#login-container #capt').val()) {
+				login.message += 'Validador es Requerido.';
+			}else{
+				  var vcapt=''; 
+				  $.ajax({
+						url: "/login/data/getcapt.php",data: {'valor':$('#login-container #capt').val()}
+					}).then(function(data) {
+						alert(data.msg);
+						login.message +=data.msg;
+						});
+				}
+
+			if (login.message.length > 0) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		},
+		validateEmail: function (email) {
+			var at = email.lastIndexOf("@");
+
+			// Make sure the at (@) sybmol exists and  
+			// it is not the first or last character
+			if (at < 1 || (at + 1) === email.length)
+				return false;
+
+			// Make sure there aren't multiple periods together
+			if (/(\.{2,})/.test(email))
+				return false;
+
+			// Break up the local and domain portions
+			var local = email.substring(0, at);
+			var domain = email.substring(at + 1);
+
+			// Check lengths
+			if (local.length < 1 || local.length > 64 || domain.length < 4 || domain.length > 255)
+				return false;
+
+			// Make sure local and domain don't start with or end with a period
+			if (/(^\.|\.$)/.test(local) || /(^\.|\.$)/.test(domain))
+				return false;
+
+			// Check for quoted-string addresses
+			// Since almost anything is allowed in a quoted-string address,
+			// we're just going to let them go through
+			if (!/^"(.+)"$/.test(local)) {
+				// It's a dot-string address...check for valid characters
+				if (!/^[-a-zA-Z0-9!#$%*\/?|^{}`~&'+=_\.]*$/.test(local))
+					return false;
+			}
+
+			// Make sure domain contains only valid characters and at least one period
+			if (!/^[-a-zA-Z0-9\.]*$/.test(domain) || domain.indexOf(".") === -1)
+				return false;	
+
+			return true;
+		},
+		showError: function () {
+			$('#login-container .login-message')
+				.html($('<div class="login-error"></div>').append(login.message))
+				.fadeIn(200);
+		}
+	};
+
+	login.init();
+
+});
