@@ -40,7 +40,6 @@ nav {
   font-size: 1.5rem;
   margin: 0 auto;
   position: fixed;
-  height: 100vh;
   background-color: var(--fondo_titulo_oscuro);
 }
 
@@ -72,6 +71,8 @@ nav ul li {
   flex-direction: row;
   justify-content: center;
   background: var(--fondo_titulo_oscuro);
+  height: 100vh;
+
 }
 
 .hero-content {
