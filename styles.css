@@ -81,9 +81,9 @@ button {
 }
 
 @media screen and (max-width: 575px) {
-  .hero{
+  /* .hero{
     height: 60vh;
-  }
+  } */
 
   nav label{
     display: none;
@@ -95,8 +95,8 @@ button {
     font-size: 1rem;
   }
   .hero-title{
-    font-size: 1.8rem !important;
-    text-align: center !important;
+    font-size: 2.8rem !important;
+    /* text-align: center !important; */
   }
 
 }
