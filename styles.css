@@ -98,6 +98,7 @@ button {
 .arriba {
   display: none;
   transition: opacity 0.5s ease;
+  z-index: 100;
 }
 
 .enlaces_importantes {
