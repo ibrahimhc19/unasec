@@ -24,18 +24,23 @@ html {
 header {
   display: flex;
   justify-content: center;
-  background-color: var(--fondo_titulo_oscuro);
-  height: 13vh;
+  /* background-color: var(--fondo_titulo_oscuro); */
+  /* height: 13vh; */
 }
 
 nav {
-  width: var(--ancho);
+  /* width: var(--ancho); */
   display: flex;
+  width: 100%;
+  z-index: 100;
+  padding: 0 15%;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   font-size: 1.5rem;
   margin: 0 auto;
+  position: fixed;
+  background-color: var(--fondo_titulo_oscuro);
 }
 
 a {
