@@ -97,3 +97,10 @@ button {
   }
 
 }
+.tarjeta{
+  transition: ease-in-out .5s;
+}
+.tarjeta:hover{
+  transform: scale(1.05);
+  transition: ease-in-out .5s;
+}
