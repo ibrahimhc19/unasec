@@ -81,6 +81,9 @@ button {
 }
 
 @media screen and (max-width: 575px) {
+  .hero{
+    height: 60vh;
+  }
 
   nav label{
     display: none;
